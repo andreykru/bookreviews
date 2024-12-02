@@ -24,7 +24,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 class ReviewControllerTest extends Specification {
 
-
     GlobalExceptionHandler handler
     ObjectMapper objectMapper
     ReviewService reviewService
