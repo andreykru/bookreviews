@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: book-review-app
+  profiles:
+    active: local
+  flyway:
+    enabled: true
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
