@@ -227,6 +227,7 @@ class ReviewServiceTest extends Specification {
         def securityContext = Mock(SecurityContext) {
             getAuthentication() >> authentication
         }
+
         SecurityContextHolder.setContext(securityContext)
     }
 
