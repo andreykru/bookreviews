@@ -217,7 +217,7 @@ class ReviewServiceTest extends Specification {
 
         then:
         thrown(NotFoundException)
-        1 * reviewRepository.delete(_)
+        0 * reviewRepository.delete(_)
     }
 
     def mockSecurityContext(String username) {
