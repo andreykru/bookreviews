@@ -5,10 +5,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import pl.krutikov.bookreviews.domain.Book;
-import pl.krutikov.bookreviews.dto.response.BookResponse;
 import pl.krutikov.bookreviews.dto.client.GoogleBooksResponse;
+import pl.krutikov.bookreviews.dto.response.BookResponse;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface BookMapper {
 
     BookResponse toResponse(Book book);
