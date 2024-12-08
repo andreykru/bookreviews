@@ -52,11 +52,18 @@ jobs:
           docker build -t ${{ secrets.AWS_REPOSITORY }}:${{ github.sha }} .
           docker tag ${{ secrets.AWS_REPOSITORY }}:${{ github.sha }} ${{ secrets.AWS_ECR }}/${{ secrets.AWS_REPOSITORY }}:${{ github.sha }}
           docker push ${{ secrets.AWS_ECR }}/${{ secrets.AWS_REPOSITORY }}:${{ github.sha }}
+          echo "::set-output name=image::${{ secrets.AWS_ECR }}/${{ secrets.AWS_REPOSITORY }}:${{ github.sha }}"
 
       - name: Download task definition
         run: |
           aws ecs describe-task-definition --task-definition bookreviewstask \
           --query taskDefinition > task-definition.json
+
+      - name: Read task-definition.json
+        run: cat task-definition.json
+
+      - name: Update task-definition.json
+        run: echo "`jq '.containerDefinitions[0].image="${{ steps.build-image.outputs.image }}"' task-definition.json`" > task-definition.json
 
       - name: Read task-definition.json
         run: cat task-definition.json
