@@ -6,15 +6,10 @@ on:
     types:
       - completed
 
-env:
-  AWS_REGION: ${{ secrets.AWS_REGION }}
-  AWS_REGISTRY: ${{ secrets.AWS_ECR }}
-  AWS_REPOSITORY: bookreviewsrepository
-
 jobs:
   deploy:
     name: Deploy
-    if: ${{ github.event.workflow_run.head_branch == 'master' && github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     environment: production
 
@@ -30,13 +25,14 @@ jobs:
           echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
           echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
+          echo "AWS_ECR=${{ secrets.AWS_ECR }}" >> $GITHUB_ENV
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: $AWS_REGION
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -44,10 +40,8 @@ jobs:
 
       - name: Build, tag and push image to Amazon ECR
         id: build-image
-        env:
-          IMAGE_TAG: ${{ github.sha }}
         run: |
-          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_REGISTRY
-          docker build -t $AWS_REPOSITORY:$IMAGE_TAG .
-          docker tag $AWS_REPOSITORY:$IMAGE_TAG $AWS_REGISTRY/$AWS_REPOSITORY:$IMAGE_TAG
-          docker push $AWS_REGISTRY/$AWS_REPOSITORY:$IMAGE_TAG
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR }}
+          docker build -t ${{ secrets.AWS_REPOSITORY }}:${{ github.sha }} .
+          docker tag ${{ secrets.AWS_REPOSITORY }}:${{ github.sha }} ${{ secrets.AWS_ECR }}/${{ secrets.AWS_REPOSITORY }}:${{ github.sha }}
+          docker push ${{ secrets.AWS_ECR }}/${{ secrets.AWS_REPOSITORY }}:${{ github.sha }}
