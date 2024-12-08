@@ -8,13 +8,13 @@ import pl.krutikov.bookreviews.domain.Book;
 import pl.krutikov.bookreviews.domain.Review;
 import pl.krutikov.bookreviews.domain.User;
 import pl.krutikov.bookreviews.dto.request.CreateReviewRequest;
+import pl.krutikov.bookreviews.dto.request.UpdateReviewRequest;
 import pl.krutikov.bookreviews.dto.response.ReviewIdResponse;
 import pl.krutikov.bookreviews.dto.response.ReviewResponse;
-import pl.krutikov.bookreviews.dto.request.UpdateReviewRequest;
 
 import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface ReviewMapper {
 
     @Mapping(target = "bookId", source = "review.book.id")

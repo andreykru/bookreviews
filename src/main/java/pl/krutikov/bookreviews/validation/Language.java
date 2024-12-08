@@ -17,9 +17,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({PARAMETER, FIELD})
 @Retention(RUNTIME)
 public @interface Language {
+
     String message() default "Invalid language code";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
 }

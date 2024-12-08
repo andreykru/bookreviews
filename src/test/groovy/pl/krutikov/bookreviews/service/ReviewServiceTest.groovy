@@ -220,7 +220,7 @@ class ReviewServiceTest extends Specification {
         0 * reviewRepository.delete(_)
     }
 
-    private void mockSecurityContext(String username) {
+    def mockSecurityContext(String username) {
         def authentication = Mock(Authentication) {
             getName() >> username
         }

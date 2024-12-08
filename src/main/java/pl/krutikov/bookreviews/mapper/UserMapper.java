@@ -8,10 +8,7 @@ import pl.krutikov.bookreviews.dto.response.UserIdResponse;
 import pl.krutikov.bookreviews.mapper.encoder.EncodedMapping;
 import pl.krutikov.bookreviews.mapper.encoder.PasswordEncoderMapper;
 
-@Mapper(
-        componentModel = "spring",
-        uses = PasswordEncoderMapper.class
-)
+@Mapper(uses = PasswordEncoderMapper.class)
 public interface UserMapper {
 
     @Mapping(target = "password", source = "password", qualifiedBy = EncodedMapping.class)

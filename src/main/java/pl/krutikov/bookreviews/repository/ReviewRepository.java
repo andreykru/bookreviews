@@ -13,7 +13,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     List<Review> findByBookId(String bookId);
 
-    boolean existsByBookAndUser(Book book, User user);
     boolean existsByBookIdAndUserId(String bookId, Long userId);
 
 }
