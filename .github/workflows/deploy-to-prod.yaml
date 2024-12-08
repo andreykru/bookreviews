@@ -6,6 +6,11 @@ on:
     types:
       - completed
 
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_REGISTRY: ${{ secrets.AWS_ECR }}
+  AWS_REPOSITORY: bookreviewsrepository
+
 jobs:
   deploy:
     name: Deploy
@@ -31,4 +36,18 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: $AWS_REGION
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag and push image to Amazon ECR
+        id: build-image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_REGISTRY
+          docker build -t $AWS_REPOSITORY:$IMAGE_TAG .
+          docker tag $AWS_REPOSITORY:$IMAGE_TAG $AWS_REGISTRY/$AWS_REPOSITORY:$IMAGE_TAG
+          docker push $AWS_REGISTRY/$AWS_REPOSITORY:$IMAGE_TAG
