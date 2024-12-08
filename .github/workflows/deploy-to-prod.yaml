@@ -67,3 +67,14 @@ jobs:
 
       - name: Read task-definition.json
         run: cat task-definition.json
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: task-definition.json
+          service: ${{ env.ECS_SERVICE}}
+          cluster: ${{ env.ECS_CLUSTER}}
+
+      - name: Force redeploy
+        run: |
+          aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --region ${{ secrets.AWS_REGION }} --force-new-deployment
