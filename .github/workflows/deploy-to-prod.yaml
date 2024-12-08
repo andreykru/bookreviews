@@ -33,6 +33,8 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
           echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
           echo "AWS_ECR=${{ secrets.AWS_ECR }}" >> $GITHUB_ENV
+          echo "ECS_CLUSTER=${{ secrets.ECS_CLUSTER }}" >> $GITHUB_ENV
+          echo "ECS_SERVICE=${{ secrets.ECS_SERVICE }}" >> $GITHUB_ENV
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -72,9 +74,9 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
           task-definition: task-definition.json
-          service: ${{ env.ECS_SERVICE}}
-          cluster: ${{ env.ECS_CLUSTER}}
+          service: ${{ secrets.ECS_SERVICE }}
+          cluster: ${{ secrets.ECS_CLUSTER }}
 
       - name: Force redeploy
         run: |
-          aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --region ${{ secrets.AWS_REGION }} --force-new-deployment
+          aws ecs update-service --cluster ${{ secrets.ECS_CLUSTER}} --service ${{ secrets.ECS_SERVICE }} --region ${{ secrets.AWS_REGION }} --force-new-deployment
