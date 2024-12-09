@@ -8,7 +8,6 @@ import pl.krutikov.bookreviews.validation.Language;
 import pl.krutikov.bookreviews.validation.Subject;
 
 @Data
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SearchBooksRequest {
 
