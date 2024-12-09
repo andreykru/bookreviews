@@ -1,14 +1,10 @@
 spring:
   datasource:
-    url: ${AWS_DB_URL}
-    username: ${AWS_DB_USERNAME}
-    password: ${AWS_DB_PASSWORD}
+    url: jdbc:postgresql://database-bookreviews.cj48eu08k1d5.eu-north-1.rds.amazonaws.com:5432/book_review_db
+    username: postgres
+    password: fdre&7rd^654
 
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: false
-
-logging:
-  level:
-    org.springframework.boot.context.properties: debug
