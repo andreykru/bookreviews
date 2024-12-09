@@ -35,11 +35,6 @@ jobs:
           echo "AWS_ECR=${{ secrets.AWS_ECR }}" >> $GITHUB_ENV
           echo "ECS_CLUSTER=${{ secrets.ECS_CLUSTER }}" >> $GITHUB_ENV
           echo "ECS_SERVICE=${{ secrets.ECS_SERVICE }}" >> $GITHUB_ENV
-          echo "AWS_DB_URL=${{ secrets.AWS_DB_URL }}"
-          echo "AWS_DB_USERNAME=${{ secrets.AWS_DB_USERNAME }}"
-          echo "AWS_DB_PASSWORD=${{ secrets.AWS_DB_PASSWORD }}"
-          echo "AWS_ECR=${{ secrets.AWS_ECR }}"
-          echo "AWS_REPOSITORY=${{ secrets.AWS_REPOSITORY }}"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -56,7 +51,8 @@ jobs:
         id: build-image
         run: |
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR }}
-          docker build --build-arg AWS_DB_URL=${{ secrets.AWS_DB_URL }} \
+          docker build \
+          --build-arg AWS_DB_URL=${{ secrets.AWS_DB_URL }} \
           --build-arg AWS_DB_USERNAME=${{ secrets.AWS_DB_USERNAME }} \
           --build-arg AWS_DB_PASSWORD=${{ secrets.AWS_DB_PASSWORD }} \
           -t ${{ secrets.AWS_REPOSITORY }}:${{ github.sha }} .
