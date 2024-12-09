@@ -51,7 +51,11 @@ jobs:
         id: build-image
         run: |
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR }}
-          docker build -t ${{ secrets.AWS_ECR }}/${{ secrets.AWS_REPOSITORY }}:${{ github.sha }} .
+          docker build \
+          --build-arg AWS_DB_URL="${{ secrets.AWS_DB_URL }}" \
+          --build-arg AWS_DB_USERNAME="${{ secrets.AWS_DB_USERNAME }}" \
+          --build-arg AWS_DB_PASSWORD="${{ secrets.AWS_DB_PASSWORD }}" \
+          -t ${{ secrets.AWS_REPOSITORY }}:${{ github.sha }} .
           docker tag ${{ secrets.AWS_REPOSITORY }}:${{ github.sha }} ${{ secrets.AWS_ECR }}/${{ secrets.AWS_REPOSITORY }}:${{ github.sha }}
           docker push ${{ secrets.AWS_ECR }}/${{ secrets.AWS_REPOSITORY }}:${{ github.sha }}
           echo "::set-output name=image::${{ secrets.AWS_ECR }}/${{ secrets.AWS_REPOSITORY }}:${{ github.sha }}"
