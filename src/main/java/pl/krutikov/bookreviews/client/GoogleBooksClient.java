@@ -1,13 +1,11 @@
 package pl.krutikov.bookreviews.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import pl.krutikov.bookreviews.config.FeignConfig;
 import pl.krutikov.bookreviews.dto.client.GoogleBooksResponse;
-import pl.krutikov.bookreviews.dto.request.SearchBooksRequest;
 import pl.krutikov.bookreviews.logging.Logging;
 
 @FeignClient(

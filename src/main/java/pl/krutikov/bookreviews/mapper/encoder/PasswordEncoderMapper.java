@@ -3,7 +3,6 @@ package pl.krutikov.bookreviews.mapper.encoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import pl.krutikov.bookreviews.mapper.encoder.EncodedMapping;
 
 @Component
 @RequiredArgsConstructor
