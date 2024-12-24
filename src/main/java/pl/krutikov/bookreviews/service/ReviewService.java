@@ -23,7 +23,9 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @Slf4j
 @Service
@@ -45,21 +47,22 @@ public class ReviewService {
     @Logging
     @SneakyThrows
     public ReviewIdResponse createReview(CreateReviewRequest request) {
-        String username = getAuthenticatedUsername();
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            String username = getAuthenticatedUsername();
 
-        CompletableFuture<User> userFuture = CompletableFuture.supplyAsync(() -> userService.findByEmail(username));
-        CompletableFuture<Book> bookFuture = CompletableFuture.supplyAsync(() -> bookService.getBookById(request.getBookId()));
-        CompletableFuture.allOf(userFuture, bookFuture).join();
+            Future<User> userFuture = executor.submit(() -> userService.findByEmail(username));
+            Future<Book> bookFuture = executor.submit(() -> bookService.getBookById(request.getBookId()));
 
-        User user = userFuture.get();
-        Book book = bookFuture.get();
+            User user = userFuture.get();
+            Book book = bookFuture.get();
 
-        checkReviewAlreadyExists(book, user);
+            checkReviewAlreadyExists(book, user);
 
-        Review review = reviewMapper.toEntity(request, user, book);
-        Review reviewWithId = reviewRepository.save(review);
+            Review review = reviewMapper.toEntity(request, user, book);
+            Review reviewWithId = reviewRepository.save(review);
 
-        return reviewMapper.toIdResponse(reviewWithId);
+            return reviewMapper.toIdResponse(reviewWithId);
+        }
     }
 
     @Logging

@@ -15,7 +15,9 @@ import pl.krutikov.bookreviews.mapper.UserMapper;
 import pl.krutikov.bookreviews.repository.UserRepository;
 
 import java.util.Collections;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @Service
 @RequiredArgsConstructor
@@ -39,25 +41,26 @@ public class UserService implements UserDetailsService {
     @Logging
     @SneakyThrows
     public UserIdResponse registerNewUser(RegisterUserRequest request) {
-        CompletableFuture<Boolean> emailCheckFuture = CompletableFuture.supplyAsync(
-                () -> userRepository.findByEmail(request.getEmail()).isPresent()
-        );
-        CompletableFuture<Boolean> usernameCheckFuture = CompletableFuture.supplyAsync(
-                () -> userRepository.findByUsername(request.getUsername()).isPresent()
-        );
-        CompletableFuture.allOf(emailCheckFuture, usernameCheckFuture).join();
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            Future<Boolean> emailCheckFuture = executor.submit(
+                    () -> userRepository.findByEmail(request.getEmail()).isPresent()
+            );
+            Future<Boolean> usernameCheckFuture = executor.submit(
+                    () -> userRepository.findByUsername(request.getUsername()).isPresent()
+            );
 
-        if (emailCheckFuture.get()) {
-            throw new BadRequestException(String.format("User with email: %s is already registered", request.getEmail()));
+            if (emailCheckFuture.get()) {
+                throw new BadRequestException(String.format("User with email: %s is already registered", request.getEmail()));
+            }
+            if (usernameCheckFuture.get()) {
+                throw new BadRequestException(String.format("User with username: %s is already registered", request.getUsername()));
+            }
+
+            User newUser = userMapper.toEntity(request);
+            User savedUser = userRepository.save(newUser);
+
+            return userMapper.toResponse(savedUser);
         }
-        if (usernameCheckFuture.get()) {
-            throw new BadRequestException(String.format("User with username: %s is already registered", request.getUsername()));
-        }
-
-        User newUser = userMapper.toEntity(request);
-        User savedUser = userRepository.save(newUser);
-
-        return userMapper.toResponse(savedUser);
     }
 
 }
